@@ -137,6 +137,7 @@
       - [識別モデルと生成モデル「数式が出た」](#識別モデルと生成モデル数式が出た)
       - [オートエンコーダ](#オートエンコーダ)
       - [VAE(Variational Autoencoder)](#vaevariational-autoencoder)
+  - [⇒Reparametrization Trick](#reparametrization-trick)
         - [VQ-VAE](#vq-vae)
       - [GAN「programming問題、最終的には0.5?1？に近づけたい？」](#ganprogramming問題最終的には051に近づけたい)
         - [DCGAN](#dcgan)
@@ -1342,9 +1343,12 @@ L_{\log}(p) &= -\ln L(p; D)\\
   - VAEは潜在変数に「ランダム性」と「連続性」を持たせている
   - ランダム性と連続性を持つ「正規分布」を潜在変数に導入、そのために潜在変数が正規分布に従うように調整する
 - VAEのアーキテクチャ
-
-##### VQ-VAE
 ![Alt text](image.png)
+
+- 課題：誤差逆伝播をどうするか？
+  ⇒Reparametrization Trick
+- 
+##### VQ-VAE
 
 #### <span style="color: red; ">GAN「programming問題、最終的には0.5?1？に近づけたい？」
 
@@ -1392,6 +1396,7 @@ L_{\log}(p) &= -\ln L(p; D)\\
     GCNが空間領域に踏み込むきっかけになった
 
 - R-GCNs(Relational Graph Convolutional Networks)
+[C:\Users\mssst\Git\e_qualification_2023\2022_Equalification\GCN.bmp](GCN.bmp)
   - 概要
     - Relational Graph Convolutional Networks（R-GCNs）は、異なるタイプのリレーションシップを持つグラフデータに対してグラフ畳み込みを行うためのフレームワークです。
     - 通常のGCNは単一のリレーションシップタイプしか考慮しないのに対し、R-GCNは複数のリレーションシップタイプを考慮します。
