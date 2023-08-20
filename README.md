@@ -137,8 +137,7 @@
       - [識別モデルと生成モデル「数式が出た」](#識別モデルと生成モデル数式が出た)
       - [オートエンコーダ](#オートエンコーダ)
       - [VAE(Variational Autoencoder)](#vaevariational-autoencoder)
-  - [⇒Reparametrization Trick](#reparametrization-trick)
-        - [VQ-VAE](#vq-vae)
+        - [VQ-VAE(Vector Quantised Variational Autoencoder)](#vq-vaevector-quantised-variational-autoencoder)
       - [GAN「programming問題、最終的には0.5?1？に近づけたい？」](#ganprogramming問題最終的には051に近づけたい)
         - [DCGAN](#dcgan)
         - [Conditional GAN](#conditional-gan)
@@ -1347,10 +1346,77 @@ L_{\log}(p) &= -\ln L(p; D)\\
 
 - 課題：誤差逆伝播をどうするか？
   ⇒Reparametrization Trick
-- 
-##### VQ-VAE
+- 変分自動エンコーダ（VAE）の損失関数
+- 再構成誤差（Reconstruction Error）とKLダイバージェンス（Kullback-Leibler Divergence）の2つの主要な項から構成されます。
+  これらの項は、入力データの再構成を最適化し、潜在変数が正規分布に従うようにするための正則化項として機能します。
+再構成誤差: 入力データとデコーダによって再構成されたデータとの間の誤差を測定します。通常、二値交差エントロピー損失（Binary Cross Entropy Loss）または平均二乗誤差（Mean Squared Error）が使用されます。
+Reconstruction Error=−∑i=1N(xilog(xˆi)+(1−xi)log(1−xˆi))
+xは再構成されたデータ、Nは入力データの次元数です。
+KLダイバージェンス: 潜在変数の事後分布と事前分布との間のKLダイバージェンスを計算します。これは、潜在変数が標準正規分布（平均0、分散1）に近づくようにするための正則化項として機能します。
+KL Divergence=−12∑j=1M(1+log(σ2j)−μ2j−σ2j)
+
+μは潜在変数の平均、 σ
+σは潜在変数の標準偏差、 M
+Mは潜在変数の次元数です。
+最終的なVAEの損失関数は、これらの2つの項の合計です。
+VAE Loss=Reconstruction Error+KL Divergence
+この損失関数を最小化することで、VAEは入力データを効果的に再構成し、潜在変数を標準正規分布に従うようにすることができます。
+
+- VAEの課題：posterior collapse
+  - PixelCNNなどの高い表現力があるDecoderを使うときに、潜在変数を無視した生成が行われてしまう現象
+  - 画像を入力として訓練したVAEのサンプルはややぼやける傾向にあり、その原因はまだよくわかっていない
+    - [原因1] の最小化において、ぼやけた画像に高い確率を与えることが挙げられる。ガウス分布による符号化は、わずかなピクセルの変化しかもたらさない入力特徴量を無視する傾向があることが理由。
+    - [原因2]鮮明に出力する画像よりも、全体的にぼやかした画像のほうが「入力画像と出力画像の差(MSE)」が下がることが挙げられる。
+
+##### VQ-VAE(Vector Quantised Variational Autoencoder)
+
+- 概要
+  - 
+[論文](https://arxiv.org/pdf/1711.00937.pdf)
 
 #### <span style="color: red; ">GAN「programming問題、最終的には0.5?1？に近づけたい？」
+
+- 生成器(Genarator)
+  - Discriminatorにバレないように訓練データそっくりの画像を生成する
+- 識別機(Discriminator)
+  - Generatorが生成したサンプルか、訓練データとして与えられたサンプルかを識別する
+
+- 【訓練時】GANのアーキテクチャ
+
+1. 毎回同じものを生成しないように、一様乱数からノイズzをサンプリング
+2. Generatorによって偽のデータを生成
+3. 混ぜられた観測データ（真）と生成データ（偽）を、Discriminatorが識別
+4. Discriminatorは審議を判別できるように、GeneratorはDiscriminatorを騙すように学習する
+
+- 【生成時】GANのアーキテクチャ
+
+1. 一様乱数からノイズzをサンプリング
+2. Generatorによって新たなデータを生成する
+
+- 【学習目標】
+  - G(Generator)
+    - log(1-D(G(z)))を最小化しようとする⇒G自身が生成したデータG(z)をDに本物だと思わせる
+    - 第①項：Dが訓練データをどう判断するかは、Gには関係ない
+    - 生成データから得られたデータが「生成データである」とDに判断させる確率(の自然対数の期待値)を最小化しようとしている
+  - D(Discriminator)
+    - D(Discriminator)は訓練データxと生成データG(z)に対して、正しくラベル付けを行う確率を最大化しようとする
+    - 第①項：訓練データ分布から得られたデータが「訓練データである」と判断する確率(の自然対数の期待値)を最大化しようとしている
+    - 第②項：生成データ分布から得られたデータが「生成データである」と判断する確率(の自然対数の期待値)を最大化しようとしている
+- 最適化アルゴリズム
+  - 1-1.　　個のノイズ　とデータ　をサンプリング
+1-2.　確率的勾配降下法でDiscriminatorを更新
+2-1.　　 個のノイズ　をサンプリング
+2-2.　確率的勾配降下法でGeneratorを更新
+3.　1-1～2-2を全てのミニバッチに対して繰り返す
+
+- GANの課題
+  - Discriminator(D)とGenerator(G)が拮抗しなければいけないのに、Dが圧勝して勾配消失する
+    - ⇒Dは小さいネットワークにする
+    - ⇒DのDropout rateを大きめに
+    - ⇒Unrolled GAN
+  - mode collapse(モード崩壊)
+    - ⇒Minibatch Discrimination
+    - ⇒Wasserstein GAN
 
 ##### DCGAN
 
@@ -1359,9 +1425,13 @@ L_{\log}(p) &= -\ln L(p; D)\\
 ### (7) 深層強化学習
 
 #### ①深層強化学習のモデル
+
 ##### AlphaGo
+
 ##### <span style="color: red; ">A3C「数式の解釈」
+
 分散学習を行うアルゴリズム
+
 - 深層強化学習アルゴリズム分類
   - モデルベース
     - モデルが既知
@@ -1396,7 +1466,7 @@ L_{\log}(p) &= -\ln L(p; D)\\
     GCNが空間領域に踏み込むきっかけになった
 
 - R-GCNs(Relational Graph Convolutional Networks)
-[C:\Users\mssst\Git\e_qualification_2023\2022_Equalification\GCN.bmp](GCN.bmp)
+- ![Alt text](image-1.png)
   - 概要
     - Relational Graph Convolutional Networks（R-GCNs）は、異なるタイプのリレーションシップを持つグラフデータに対してグラフ畳み込みを行うためのフレームワークです。
     - 通常のGCNは単一のリレーションシップタイプしか考慮しないのに対し、R-GCNは複数のリレーションシップタイプを考慮します。
