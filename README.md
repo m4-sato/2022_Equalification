@@ -179,7 +179,7 @@
       - [判断根拠の可視化](#判断根拠の可視化)
         - [Grad-CAM「プログラミング、depences~、猫の絵」](#grad-camプログラミングdepences猫の絵)
       - [モデルの近似](#モデルの近似)
-        - [LIME](#lime)
+        - [LIME(Local Interpretable Model-agnostic Explanations)](#limelocal-interpretable-model-agnostic-explanations)
         - [SHAP](#shap)
   - [4 開発・運用環境](#4-開発運用環境)
     - [(1) ミドルウェア](#1-ミドルウェア)
@@ -1547,6 +1547,7 @@ VAE Loss=Reconstruction Error+KL Divergence
 
 - R-GCNs(Relational Graph Convolutional Networks)
 - ![Alt text](image-1.png)
+- [ABEJA_blog](https://tech-blog.abeja.asia/entry/2017/04/27/105613)
   - 概要
     - Relational Graph Convolutional Networks（R-GCNs）は、異なるタイプのリレーションシップを持つグラフデータに対してグラフ畳み込みを行うためのフレームワークです。
     - 通常のGCNは単一のリレーションシップタイプしか考慮しないのに対し、R-GCNは複数のリレーションシップタイプを考慮します。
@@ -1713,9 +1714,21 @@ VAE Loss=Reconstruction Error+KL Divergence
 ### (11) メタ学習(Meta Learning)
 
 - 概要
-  - Networkのよりよい学習方法を学習する手法
-  - 学習率や重みの初期値などのハイパーパラメータをどう使うか探索する
-  - few-shot learningをベースにしている
+  - Networkのよりよい学習方法を学習する手法⇒すべての学習プロセスを学習する。
+  - ディープラーニングならparameter、loss、optimiserだけで十分ですが、メタ学習はさらにmeta-parameter、
+    meta-loss、meta-optimizerが必要となります。ここで、学習アルゴリズムがより複雑になります。
+    ⇒few-shot learningにより少ない学習データから正答できることを目的としています。
+
+- few-shot learning
+  メタ学習の効率を向上させるために、Model-Agnostic Meta-Learning (MAML) という有名なアルゴリズムが開発された。
+  - 1. 訓練済みモデルに対して、少量のデータを使って転移学習やメタ学習（＝複数の関連タスクから問題解決のパターンを学ぶこと）を行う手法
+  - 2. 大量にある別のデータで学習した知識を使う
+
+- few-shot learningの特徴まとめ
+  - オーギュメンテーション
+  - Metric-base分類
+  - 転移学習
+  - メタ学習
 
 #### 初期値の獲得
 
@@ -1724,7 +1737,12 @@ VAE Loss=Reconstruction Error+KL Divergence
 
 ##### MAML(Model-Agnostic Meta-Learning)
 
+- 概要
+  - メタ学習をよりよい学習にするため、Berkeley AI Research LabがModel-Agnostic Meta-Learning (MAML)を開発した。
+  - [MAML参考記事1](https://recruit.gmo.jp/engineer/jisedai/blog/meta-learning/)
+  - [Qiita記事](https://qiita.com/yamahagi/items/15d19445d563b114832b)
 - アルゴリズム
+[MAML論文](https://arxiv.org/pdf/1703.03400.pdf)
 
 1. データセット　　　　　　　　,　　　　モデル　がある
 2. この　からランダムサンプリングしたサブセット　をM個作る
@@ -1733,13 +1751,16 @@ VAE Loss=Reconstruction Error+KL Divergence
 3.2.　　 にK個のサンプルを通して損失　　 を計算
 3.3.　 更新パラメータを　　　　　　　　 とする
 　　　　※実際にここで初期値シータは更新しない)
-4. パラメータ　を以下の式で計算
-5. 新たな　を初期値としたモデル上での1-4ステップを何度かやる
-6. 最終的に求まった　を初期値としたモデルで全データに対する通常の学習を行う
+1. パラメータ　を以下の式で計算
+2. 新たな　を初期値としたモデル上での1-4ステップを何度かやる
+3. 最終的に求まった　を初期値としたモデルで全データに対する通常の学習を行う
 
 - どんなモデル、タスクについても適用可能である
 
+
 ### (12) 深層学習の説明性
+
+[Qiita記事](https://qiita.com/icoxfog417/items/8689f943fd1225e24358)
 
 #### 判断根拠の可視化
 
@@ -1769,14 +1790,18 @@ VAE Loss=Reconstruction Error+KL Divergence
 
 #### モデルの近似
 
-##### LIME
+##### LIME(Local Interpretable Model-agnostic Explanations)
 
 - 概要
   - LIME(Local Interpretable Model-agnostic Explainations)はモデルの予測に対してどのような判断をしたのかを理解する手法である
+  - 深層学習分類モデルの内部動作に関する洞察を提供するために使用される視覚化手法
   - 予測結果に対する入力変数の影響度を判断基準として測る
   - 影響の度合いを測るために予測モデルを別のモデル(線形モデルなど)で局所的に近似することで,その局所的なモデルの係数から予測結果の寄与率を見る
   - 画像処理や言語処理などにも使える
   - 蒸留と似ている
+    - LIMEは、特定の入力データ点での複雑なモデルの振る舞いを局所的に近似します。
+    - モデルの蒸留は、複雑なモデル全体の知識を単純なモデルに転送するプロセスです。
+    ⇒両方の手法は、「複雑なモデルの振る舞いや知識を単純なモデルで捉える」という共通のコンセプトに基づいてる点が似ていると言えます。
 
 - アルゴリズム
   - 最初に学習した予測モデルと解釈したいデータを用意する
@@ -1790,9 +1815,9 @@ VAE Loss=Reconstruction Error+KL Divergence
 
 - 概要
   -SHAP(Shapley Additive exPlanations)は予測モデルの予測値に対してシャープレイ値を用いて入力の各特徴量の貢献度を表す手法である
+  - 協力ゲーム理論のシャープレイ値（Shapley Value）を機械学習に応用したオープンソースのライブラリ
   - シャープレイ値とは各特徴量を組み合わせたときにどれくらい貢献するかを表すもの
   - 各特徴量の組み合わせは特徴量の階乗個になり計算量が莫大となるがSHAPはそこを近似的に少ない計算で行えるようにした
-  - 画像処理や言語処理などにも使える
 
 [SHAP論文](https://arxiv.org/pdf/1705.07874.pdf)
 
@@ -1800,6 +1825,11 @@ VAE Loss=Reconstruction Error+KL Divergence
   - Local accuracy
   - Missingness
   - Consistency
+  - シャープレイ値は、協力ゲーム理論において複数プレイヤーの協力によって得られた利得を各プレイヤーに公正に分配するための手段の一つです。
+
+- LIME・SHAPともにあらゆるモデルに使用することができる。
+- [SHAP解説記事](https://www.datarobot.com/jp/blog/explain-machine-learning-models-using-shap/)
+- [自然言語処理説明性記事](https://tt-tsukumochi.com/archives/6246)
 
 ## 4 開発・運用環境
 
@@ -1911,15 +1941,31 @@ GPUを複数用いてより高速な計算を可能にする
 
 ##### <span style="color: red; ">GPU「GPUの性能、TPU（レイテンシ、ノイマン～）についても説明問題が出た」
 
-大規模な計算処理を高速に行うための演算処理装置
-CPUとGPUでは、計算速度に10倍〜100倍の差がある
+- 概要
+  - 大規模な計算処理を高速に行うための演算処理装置
+  - CPUとGPUでは、計算速度に10倍〜100倍の差がある
+    - CPU:数個～数十個のコア
+    - GPU:数百個～数千個のコア、32ビットの単精度
+  - SIMD(シングル・インストラクション・マルチプル・データ)という方式で、1つの命令で複数のデータを同時に処理することができる
 - GPGPU
-  汎用的な用途（数値計算、シミュレーション、信号処理など）に使われる GPU
+  汎用的な用途（数値計算、シミュレーション、信号処理など）に使われる
 - GPUの計算戦略
   GPUとCPUでの通信回数を少なくする
   GPUの大量ユニット、およびコアへ効率よく計算タスクを分配し、大きい並列数で計算する
+
 - TPU
-- 
+  - TPUは並列化と最適化を強化するための専用アーキテクチャを持っています。
+  - 8bitの精度で計算を行うことで、CPUやGPUよりも高速に計算を行うことができます。
+  - シストリックアレイにより、メモリへの読み書きを大幅に減らす＆集約度を高め、電力消費を抑える。
+  - 数千の低精度プロセッサコアを持ち、これらを並列に動作させてテンソル計算を高速化しています。
+  - 専用のメモリ階層やデータ転送を最適化する設計が採用されています。
+  - レイテンシとは
+    - システムが入力を受け取ってから応答するまでの時間のことを指します。
+    - 機械学習の推論タスクでは、低レイテンシが求められることがあります。TPUの設計は高速なテンソル計算を実現するために最適化されており、これによりレイテンシが低減されています。
+  - [参考記事](https://zenn.dev/nekoallergy/articles/ml-memo01-tpu01)
+  - 参考
+    ノイマン型アーキテクチャ：CPU
+
 - CUDA
   DeepLearningをNVIDIA社提供のGPUによる並列計算で高速化させるためのソフトウェア
 
