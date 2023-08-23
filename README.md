@@ -1636,12 +1636,29 @@ VAE Loss=Reconstruction Error+KL Divergence
     - Wide Residual Network
       - Residual Networkの改良版
       - ResNetに比べ層数を減らしても高精度でありながら、ResNetの計算量の多さを改善
-      - 
+      - また、深い層を持つWideResNetである時は、(d)のようにdropoutを導入することで更に精度が向上
 
 ##### <span style="color: red; ">DenseNet「間接的に出ていた、あとVGGも」
 
+- 技術的な特徴
+- Dense Block
+  前の層全ての出力との残差を学習することを目的としたブロック
+- Transition Layer
+  - Dense Blockの後に挿入される
+  - 特徴マップのサイズを圧縮するために使用
+    - Dense Block内では、特徴量マップのサイズが変わるとskip connectionができない
+    - 特徴量マップを圧縮するためにダウンサンプリングは重要
 ![Alt text](image-6.png)
+[DenseNet論文](https://arxiv.org/pdf/1608.06993.pdf)
+
 ##### EfficientNet
+
+- 技術的な特徴
+  - MBConv
+    Moble Inverted BottleneckとSqueeze-and-Excitationモジュールによって構成
+  - Compound Scaling Methods
+    深さ、広さ、解像度というモデルのスケールを調整することによってパラメータ数を抑えつつ高精度を得る手法の開発
+
 
 #### <span style="color: red; ">画像の局在化・検知・セグメンテーション
 
@@ -1930,16 +1947,18 @@ VAE Loss=Reconstruction Error+KL Divergence
 
 ##### MobileNet
 
-- 画像分類ライブラリ
+- 技術的な特徴
+  - Depthwise Separable Convolution
+    Depthwise Conv.とPointwise Conv.を両立させることで、それぞれ「平面的な画素圧縮」と「チャンネル方向の画素圧縮」の２つのロールに分けた畳み込み処理
+    - Depthwise Conv.
+      - 平面方向の畳み込み
+    - Pointwise Conv.
+      - チャンネル方向の畳み込み
+      - 
 - 小型で低消費電力ながら1000クラスの画像分類を正確にできるように設計されている
-- MobileNetを使用した転移学習で重要なのは活性化層を探すこと
-- 転移学習を使用するアプリケーションを作成するには以下の手順
-  - 1.MobileNetモデルをダウンロードして使用する層を特定する
-  - 2.独自のモデルアーキテクチャを作成し、MobileNetの出力を入力とする
-  - 3.学習に使用できるデータセットを収集する
-  - 4.モデルの学習を行う
-  - 5.推論を実行する
+- MobileNetを使用した転移学習で重要なのは活性化層を探すこと?
 - 分類を行う画像をテンソルに事前変換する必要がない
+[MobileNet論文](https://arxiv.org/pdf/1704.04861.pdf)
 
 #### <span style="color: red; ">②モデルの軽量化
 
