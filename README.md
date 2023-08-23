@@ -1588,17 +1588,65 @@ VAE Loss=Reconstruction Error+KL Divergence
 
 #### 画像認識
 
+1. 画像分類
+  何を示す画像であるかを分類する
+  例) 手書き文字認識、医療画像の診断
+2. 物体検出
+  画像内の物体のクラスと位置を検出
+  例) 顔認識
+3. セグメンテーション
+  画像内の物体のクラスと輪郭を推定
+
 ##### GoogLeNet
+
+- 技術的な特徴
+  - 1.Inception module
+    異なるサイズのフィルターを同時に使用して、画像の異なるスケールでの特徴を同時に捉えることができます。
+    - 1x1の畳み込み層(pointwise convolution)
+      - チャンネル方向の次元削減
+      - パラメータ数を削減
+![Alt text](image-2.png)
+  - 2.Auxiliary loss
+    中間層における損失計算・逆伝播を補助的に行うことで、勾配消失を防ぐ
+![Alt text](image-3.png)
+  - 3.Global Average Pooling
+    - 各チャンネルごとのフィルター平均
+    - 最後の畳み込み層の後、全結合層を使用する代わりにグローバル平均プーリングが使用されます。
+    - これにより、モデルのサイズを大幅に削減することができます。
+
+![Alt text](image-4.png)
+[GoogleNet論文](https://arxiv.org/pdf/1409.4842.pdf)
 
 ##### <span style="color: red; ">Resnet、WideResNet「間接的に出題されていた」
 
+- ResNet
+  - 技術的な特徴
+    - Residual Blockアーキテクチャ
+      - 残差を学習することを目的としたブロック
+      - ![Alt text](image-5.png)
+        - Plainアーキテクチャ
+          3×3の畳み込み層×2で残差学習
+        - Bottleneckアーキテクチャ
+          1×1の畳み込み層 + 3×3の畳み込み層 + 1×1の畳み込み層で残差学習
+![resnet](https://user-images.githubusercontent.com/26739999/156701329-2c7ec7bc-23da-401b-86bf-dea8567ccee8.png)
+[ResNet論文](https://arxiv.org/pdf/1605.07146.pdf)
+
+- WideResNet
+  - 技術的な特徴
+    - Wide Residual Network
+      - Residual Networkの改良版
+      - ResNetに比べ層数を減らしても高精度でありながら、ResNetの計算量の多さを改善
+      - 
+
 ##### <span style="color: red; ">DenseNet「間接的に出ていた、あとVGGも」
 
+![Alt text](image-6.png)
 ##### EfficientNet
 
 #### <span style="color: red; ">画像の局在化・検知・セグメンテーション
 
 #### FasterR-CNN
+
 
 ##### <span style="color: red; ">YOLO「簡単な計算問題が出た」
 
