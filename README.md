@@ -1472,7 +1472,17 @@ VAE Loss=Reconstruction Error+KL Divergence
 ##### VQ-VAE(Vector Quantised Variational Autoencoder)
 
 - 概要
-  - 
+  - Vector Quantised(ベクトル量子化)という手法を使ったVAE
+  - モデルは(Encoder)-(量子化部分)-(Decoder)から成りますが、Encoder、Decoderについては畳み込みを行うVAEと大きく変わりません。
+  - 潜在変数
+    - データの隠れた、または明示的でない特徴を表現する変数。
+    - 機械学習において、直接観察することができない、または測定することが困難な変数を指します。
+  - コードブック
+    - 固定された数のベクトルの集合
+    - 様々な特徴やパターンを表す「代表的な」ベクトルの集合
+  - embedding space
+    - 入力をonehot化してembedding行列を掛けたものに過ぎません。
+![Alt text](image-8.png)
 [論文](https://arxiv.org/pdf/1711.00937.pdf)
 
 #### <span style="color: red; ">GAN「programming問題、最終的には0.5?1？に近づけたい？」
@@ -1637,6 +1647,7 @@ VAE Loss=Reconstruction Error+KL Divergence
       - Residual Networkの改良版
       - ResNetに比べ層数を減らしても高精度でありながら、ResNetの計算量の多さを改善
       - また、深い層を持つWideResNetである時は、(d)のようにdropoutを導入することで更に精度が向上
+      - [WideResNet記事](https://deepsquare.jp/2021/08/wideresnet/)
 
 ##### <span style="color: red; ">DenseNet「間接的に出ていた、あとVGGも」
 
@@ -1659,14 +1670,25 @@ VAE Loss=Reconstruction Error+KL Divergence
   - Compound Scaling Methods
     深さ、広さ、解像度というモデルのスケールを調整することによってパラメータ数を抑えつつ高精度を得る手法の開発
 
+[EfficientNet論文](https://arxiv.org/pdf/1905.11946.pdf)
 
 #### <span style="color: red; ">画像の局在化・検知・セグメンテーション
 
+- 物体検出とは、画像の中から「どこに何があるか」を検出するタスク
+- 評価指標
+  - IoU(Intersection over Union)
+    - 予測領域と正解領域の重なり具合を表す指標
+  - accuracy
+
 #### FasterR-CNN
 
+- 技術的な特徴
+  - CNNを用いたRegion proposal (領域提案)でROIs(関心領域)を選定
+  - CNNの出力(特徴量マップ)とROIsを対応させて、候補特徴量マップを選定しROI poolingによりリサイズする
+  - End-to-Endでの学習が可能になった
+[FasterR-CNN論文](https://arxiv.org/pdf/1506.01497.pdf)
 
 ##### <span style="color: red; ">YOLO「簡単な計算問題が出た」
-
 
 ##### SSD
 
