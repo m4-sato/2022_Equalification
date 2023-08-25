@@ -1408,17 +1408,10 @@ L_{\log}(p) &= -\ln L(p; D)\\
 
 #### オートエンコーダ
 
-- 潜在変数
-  - 潜在的な特徴を表す変数
-  - （例）季節
-    - 「月間平均気温(横軸)」と「月間平均湿度(縦軸)」の２つの軸から「季節」という１つの軸でデータを捉える
-  - 潜在変数は「次元圧縮後の世界」
-
 - Encoder
   - 潜在変数に落とし込み、高次元データから潜在変数を推測するモデル(ニューラルネットワーク)
 - Decoder
-  - 潜在変数をもとにデータを生成する
-  - ニューラルネットワーク
+  - 潜在変数をもとにデータを生成するニューラルネットワーク
 - AEの次元圧縮効果
   - 入力と同じものを、入力の次元より少ない次元の潜在変数から出力させる⇨効果的な潜在変数が作られる
   - 画像のノイズ除去:Encoderで次元圧縮で抽象化してからDecoderで元の次元に戻す
@@ -1484,13 +1477,24 @@ VAE Loss=Reconstruction Error+KL Divergence
     - 入力をonehot化してembedding行列を掛けたものに過ぎません。
 ![Alt text](image-8.png)
 [論文](https://arxiv.org/pdf/1711.00937.pdf)
+[VQ-VAE記事](https://qiita.com/nishiha/items/44de5c46ebdfe615f6e8)
 
 #### <span style="color: red; ">GAN「programming問題、最終的には0.5?1？に近づけたい？」
 
-- 生成器(Genarator)
-  - Discriminatorにバレないように訓練データそっくりの画像を生成する
-- 識別機(Discriminator)
-  - Generatorが生成したサンプルか、訓練データとして与えられたサンプルかを識別する
+- 概要
+  - 1つのニューラルネットワークではなくて2つの分離したニューラルネットワークを使うことでコンピュータがリアルなデータを生成することができた。
+  - 生成器(Genarator)
+    - Discriminatorにバレないように訓練データそっくりの画像を生成する
+    - 入力値：乱数からなるベクトル
+    - 出力値：偽のサンプル
+    - 目標：訓練データの要素と見分けがつかない偽のデータを生成すること
+  - 識別機(Discriminator)
+    - Generatorが生成したサンプルか、訓練データとして与えられたサンプルかを識別する
+    - 入力：2種類
+      - 訓練データからきた本物のサンプル
+      - 生成器が生成した偽のサンプル
+    - 出力：入力サンプルが本物か偽物かを表す推定確率
+    - 目標：本物のサンプルと偽物のサンプルを正しく識別すること
 
 - 【訓練時】GANのアーキテクチャ
 
@@ -1528,6 +1532,8 @@ VAE Loss=Reconstruction Error+KL Divergence
   - mode collapse(モード崩壊)
     - ⇒Minibatch Discrimination
     - ⇒Wasserstein GAN
+
+[GAN論文](https://arxiv.org/pdf/1406.2661.pdf)
 
 ##### DCGAN
 
